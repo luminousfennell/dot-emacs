@@ -14,7 +14,11 @@
  )
 
 ;; hook
-(add-hook 'dired-mode-hook (lambda () (auto-revert-mode t)))
+(add-hook 'dired-mode-hook
+	  (lambda ()
+	    (auto-revert-mode t)
+	    ;; keybindings
+	    (evil-define-key 'normal dired-mode-map ")" 'dired-details-toggle)))
 
 
 ;;dired-x for hidden view
