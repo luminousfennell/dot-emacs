@@ -6,6 +6,5 @@
 (load-file "~/.emacs.d/init-ispell.el")
 (load-file "~/.emacs.d/init-coq.el")
 (load-file "~/.emacs.d/init-ocaml.el")
-(load-file "~/.emacs.d/init-local.el")
 (load-file "~/.emacs.d/init-surround.el")
 

@@ -5,14 +5,15 @@
 
 ;; some special keymaps for dired standalone
 (add-hook 'dired-mode-hook (lambda ()
-                             (define-key dired-mode-map "\C-m" 'dired-dtach-find-file)
+                             (evil-define-key 'normal dired-mode-map "\C-m" 'dired-dtach-find-file)
                              (define-key dired-mode-map (kbd "C-c t")  'dired-dtach-open-terminal)
 			     ;; TODO fix ido-gvfs... use dtach
                              ;; (define-key dired-mode-map (kbd "C-x C-f") 'ido-find-file-gvfs)
                              (define-key 
                                dired-mode-map 
                                (kbd "C-u +") 
-                               'my-dired-new-file)))
+                               'my-dired-new-file))
+	  t)
 
 
 ;; new empty file ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
