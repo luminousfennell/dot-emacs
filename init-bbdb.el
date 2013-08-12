@@ -1,5 +1,5 @@
 ;; Define bbdb mail aliases for mail-abbrevs-mode
-(require 'bbdb "~/.emacs.d/bbdb/lisp/bbdb.el")
+(require 'bbdb)
 (bbdb-initialize 'gnus 'message)
 (add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
 (add-hook 'gnus-startup-hook 'bbdb-insinuate-message) 
