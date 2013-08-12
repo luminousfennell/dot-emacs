@@ -76,4 +76,5 @@
 
 ;; custom common package initialization
 (load-file "~/.emacs.d/init-evil.el")
+(load-file "~/.emacs.d/init-surround.el")
 (load-file "~/.emacs.d/init-tramp.el")
