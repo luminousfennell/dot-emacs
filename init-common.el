@@ -11,22 +11,12 @@
  global-auto-revert-non-file-buffers t
  make-backup-files nil
  ring-bell-function 'ignore
- recentf-mode t
  show-paren-mode t
  vc-follow-symlinks nil
- x-select-enable-clipboard t
- )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; spellchecking
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Prefer M-TAB of the other modes
-;; (add-to-list 'flyspell-mode-hook
-(set 'flyspell-mode-hook
-     (lambda ()
-       (define-key flyspell-mode-map (kbd "M-TAB") nil)
-       (define-key flyspell-mode-map (kbd "C-<tab>") 
-         'flyspell-auto-correct-word)))
+ x-select-enable-clipboard t)
 
+;; disable toolbar mode
+(tool-bar-mode -1)
 
 ;; common keybindings
 (defun my-bind-window-movement ()
@@ -46,20 +36,6 @@
   (shell)
   (switch-to-buffer (current-buffer)))
 
-;; now load additional init files if they exist ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; first, add the config directory for convenience
-(add-to-list 'load-path "~/.emacs.d")
-
- ;; themeing
-(if (boundp 'custom-theme-load-path) 
-    (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-  (set 'custom-theme-load-path "~/.emacs.d/themes")
-  (condition-case err
-      (load-file  "~/.emacs.d/themes/zenburn-theme.el")
-    (error nil)))
-
-
 ;; deal with customize
 (setq custom-file "~/.emacs.d/init-custom.el")
 (load custom-file)
@@ -78,3 +54,7 @@
 (load-file "~/.emacs.d/init-evil.el")
 (load-file "~/.emacs.d/init-surround.el")
 (load-file "~/.emacs.d/init-tramp.el")
+(load-file "~/.emacs.d/init-ido.el")
+
+;; load the zenburn color theme by default
+(load-theme 'zenburn t)

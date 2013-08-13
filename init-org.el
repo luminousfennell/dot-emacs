@@ -1,10 +1,23 @@
 (require 'org-install)
 
+;; options
+(setq
+ org-M-RET-may-split-line (quote ((default)))
+ org-checkbox-hierarchical-statistics nil
+ org-enforce-todo-checkbox-dependencies t
+ org-enforce-todo-dependencies t
+ org-hierarchical-todo-statistics nil
+ org-pretty-entities nil
+ org-startup-indented t
+ org-yank-adjusted-subtrees t)
+
+
 ;; agenda files... set in the load hook in order to access org-directory
 (add-hook 'org-load-hook
 	  (lambda ()
 	    (setq org-agenda-files
-		  (concat (file-name-as-directory org-directory) "agenda-files.lst"))))
+		  (concat (file-name-as-directory org-directory)
+			  "agenda-files.lst"))))
 
 ;; global keybindings
 (global-set-key "\C-ca" 'org-agenda)

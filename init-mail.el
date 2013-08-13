@@ -9,7 +9,9 @@
  message-citation-line-format "On %a, %b %d %Y at %R %z, %N wrote:
 "
  message-citation-line-function 'message-insert-formatted-citation-line
- message-confirm-send t)
+ message-confirm-send t
+ message-sendmail-f-is-evil t
+ mm-text-html-renderer 'w3m)
 
 ;; BBDB settings
 (require 'bbdb)

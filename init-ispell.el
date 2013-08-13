@@ -1,3 +1,9 @@
+(set 'flyspell-mode-hook
+     (lambda ()
+       (define-key flyspell-mode-map (kbd "M-TAB") nil)
+       (define-key flyspell-mode-map (kbd "C-<tab>") 
+         'flyspell-auto-correct-word)))
+
 (defvar my-langs '("german" "en_US" "hello"))
 (defvar my-lang-ring)
 
@@ -29,5 +35,6 @@
 
 ;; setup flyspell hook
 (add-hook 'flyspell-mode-hook (setq my-flyspell-buffer-p t))
+(add-hook 'text-mode-hook 'turn-on-flyspell)
 
 
