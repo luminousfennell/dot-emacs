@@ -20,10 +20,12 @@
 	    (evil-define-key 'normal dired-mode-map ")"
 	      'dired-details-toggle)
 	    ;; Override dired-async's broken delete (it segfaults)
-	    (require 'dired-async)
-	    (evil-define-key
-	      'normal
-	      dired-mode-map "D" 'my-dired-async-delete)))
+	    ;; TODO: does not work reliably with remote->local copies
+	    ;; (require 'dired-async)
+	    ;; (evil-define-key
+	    ;;   'normal
+	    ;;   dired-mode-map "D" 'my-dired-async-delete)
+	    ))
 
 (defun my-dired-async-delete ()
   (interactive)
