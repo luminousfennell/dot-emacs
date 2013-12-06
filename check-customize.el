@@ -3,6 +3,7 @@
 ;;  - example custom file
 ;;  - basic found and not found stuff
 ;;  - also with ignored variables
+;;  - handle the case where the custom-file is not present
 
 (defcustom check-customize-ignore-list nil 
   "A list of variables that should be ignored by check-customize.")
