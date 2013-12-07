@@ -1,9 +1,10 @@
 (require 'cl)
-;; Next steps: tests for the list of missing variables generation:
-;;  - example custom file
-;;  - basic found and not found stuff
-;;  - also with ignored variables
+;; Next steps: 
+;;
 ;;  - handle the case where the custom-file is not present
+;;
+;;  - warn or error when variables are customized that are not
+;;    mentioned in the required variables? Make this optional?
 
 (defcustom check-customize-ignore-list nil 
   "A list of variables that should be ignored by check-customize.")
