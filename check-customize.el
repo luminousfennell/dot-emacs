@@ -4,7 +4,8 @@
 ;;  - handle the case where the custom-file is not present
 ;;
 ;;  - warn or error when variables are customized that are not
-;;    mentioned in the required variables? Make this optional?
+;;    mentioned in the required variables? Make this optional? (and
+;;    exclude the `check-customize-ignore-list' variable)
 
 (defcustom check-customize-ignore-list nil 
   "A list of variables that should be ignored by check-customize.")
