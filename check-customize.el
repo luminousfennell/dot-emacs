@@ -35,10 +35,10 @@
     (beginning-of-buffer)
     (check-customize-read-customs (current-buffer))))
 
-(defun check-customize-read-customs (custom-file)
+(defun check-customize-read-customs (custom-buffer)
   "Read the variables set in a custom file (from a buffer)."
-  (cl-assert (bufferp custom-file) t "Expecting a buffer!")
-  (mapcar 'cadr (cl-subseq (read custom-file) 1)))
+  (cl-assert (bufferp custom-buffer) t "Expecting a buffer!")
+  (mapcar 'cadr (cl-subseq (read custom-buffer) 1)))
 
 
 ;; Tests ;;;;;;;;;;;;;;;;;;;;;;;;
