@@ -21,7 +21,8 @@
 
 (defun check-customize-get-missing (variables file-content)
   "Return the variables that are not customized by
-  `file-content' (a list with customizations)."
+  `file-content' (a list with customizations, like the
+  `custom-set-variables' variable)."
 
     (let ((to-check (remove-if () variables))
 	  (customs (mapcar 'car file-content)))
