@@ -54,7 +54,7 @@
 
 (defun check-customize-write-additional-values (additional)
   (insert ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n")
-  (insert ";; additional custumizations that I don't know about:\n;;\n")
+  (insert ";; additional customizations that I don't know about:\n;;\n")
   (dolist (v additional)
     (insert (format ";; %s\n" v))))
 
