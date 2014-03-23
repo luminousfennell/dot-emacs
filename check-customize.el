@@ -1,16 +1,16 @@
 (require 'cl)
+(require 'widget)
 ;; Next steps: 
 ;;
 ;;  - handle the case where the custom-file is not present
 ;;
-;;  - warn or error when variables are customized that are not
-;;    mentioned in the required variables? Make this optional? (and
-;;    exclude the `check-customize-ignore-list' variable)
-;;
 ;;  - clean up obsolete code
+;;  
+;;  - enhance the warning buffer with sophisticated widgets
 
 (defcustom check-customize-ignore-list nil 
-  "A list of variables that should be ignored by check-customize.")
+  "A list of variables that should be ignored by check-customize."
+  :type '(repeat variable))
 
 (defun check-customize (variables custom-file)
   "Check if the variables in `variables' were customized in file
@@ -21,7 +21,8 @@
 		  variables
 		  customs))
 	(additional (check-customize-get-additional
-		     (append variables '(check-customize-ignore-list))
+		     (cons 'check-customize-ignore-list
+			   (append check-customize-ignore-list variables))
 		     customs)))
     (if (not (and (null missing) (null additional)))
 	(let ((buf (check-customize-create-buffer))
