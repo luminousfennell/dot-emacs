@@ -1,6 +1,5 @@
 (load-file "~/.emacs.d/init-common.el")
 
-(load-file "~/.emacs.d/init-auctex.el")
 (load-file "~/.emacs.d/init-org.el")
 (load-file "~/.emacs.d/init-dired.el")
 (load-file "~/.emacs.d/init-ispell.el")

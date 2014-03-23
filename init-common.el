@@ -2,6 +2,9 @@
 ;; Initialization and bootstrapping 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; personal extensions
+(add-to-list 'load-path "~/.emacs.d/lib")
+
 ;; init package management
 (require 'package)
 (setq 
@@ -66,10 +69,11 @@
 (use-package surround
   :ensure surround
   :init (global-surround-mode t))
+;; end evil mode
 
 (use-package tramp
   :init (add-to-list 'tramp-remote-path "/var/run/current-system/sw/bin"))
-;; custom common package initialization
+
 (use-package ido
   :init (progn
 	  (setq 
@@ -81,4 +85,27 @@
 
 	  (ido-mode t))) 
 
-
+(use-package auctex
+  :ensure auctex
+  :mode ("\\.tex\\'" . LaTeX-mode)
+  :init
+  ;; TODO: why is `config' not working
+  (add-hook 'LaTeX-mode-hook
+	    ;; dependencies
+	    '(lambda ()
+	       (require 'my-LaTeX-environment)
+	       ;; config
+	       (setq
+		reftex-plug-into-AUCTeX t
+		TeX-auto-save t
+		TeX-parse-self t
+		TeX-source-correlate-mode t)
+	       ;; keybindings
+	       (define-key LaTeX-mode-map (kbd "M-q") 'noop)
+	       (define-key LaTeX-mode-map (kbd "C-c C-e") 'my-LaTeX-environment)
+	       (define-key LaTeX-mode-map (kbd "SPC") 'my-LaTeX-break-after-sentence-or-space)
+	       (push '(?% . ("$" . "$")) surround-pairs-alist)
+	       (turn-on-reftex)
+	       (outline-minor-mode t)
+	       (visual-line-mode t)
+	       (set (make-local-variable 'visual-line-fringe-indicators) t))))
