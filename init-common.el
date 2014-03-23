@@ -67,10 +67,18 @@
   :ensure surround
   :init (global-surround-mode t))
 
+(use-package tramp
+  :init (add-to-list 'tramp-remote-path "/var/run/current-system/sw/bin"))
 ;; custom common package initialization
-;; (load-file "~/.emacs.d/init-evil.el")
-(load-file "~/.emacs.d/init-surround.el")
-(load-file "~/.emacs.d/init-tramp.el")
-(load-file "~/.emacs.d/init-ido.el")
+(use-package ido
+  :init (progn
+	  (setq 
+	   ido-auto-merge-work-directories-length -1
+	   ido-default-buffer-method (quote selected-window)
+	   ido-default-file-method (quote selected-window)
+	   ido-enable-flex-matching t
+	   ido-show-dot-for-dired t)
+
+	  (ido-mode t))) 
 
 
