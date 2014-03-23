@@ -6,6 +6,8 @@
 ;;  - warn or error when variables are customized that are not
 ;;    mentioned in the required variables? Make this optional? (and
 ;;    exclude the `check-customize-ignore-list' variable)
+;;
+;;  - clean up obsolete code
 
 (defcustom check-customize-ignore-list nil 
   "A list of variables that should be ignored by check-customize.")
@@ -14,10 +16,37 @@
   "Check if the variables in `variables' were customized in file
   `custom-file'. Checks for specific variables can be disabled by
   customizing `check-customize-ignore-list'"
-    (dolist (v (check-customize-get-missing
-		variables
-		(check-customize-read-customs-from-file custom-file)))
-      (message (format "Variable %s is not customized!" v))))
+  (let ((missing (check-customize-get-missing
+		  variables
+		  (check-customize-read-customs-from-file custom-file))))
+    (if (not (null missing))
+	(let ((buf (check-customize-create-buffer))
+	      (win (split-window))
+	      )
+	  (with-current-buffer buf
+	    (check-customize-write-missing-forms missing))
+	  (set-window-buffer win buf))
+      (message "check-customize: all required customizations are present"))))
+
+(defun check-customize-create-buffer ()
+  "Create a buffer to put the missing customizations into."
+  (let ((buf (generate-new-buffer "*Missing customizations")))
+    (with-current-buffer buf
+      (lisp-mode)
+      (insert ";; Press C-c C-c to close\n\n")
+      (local-set-key (kbd "C-c C-c") 'delete-window))
+    buf))
+
+(defun check-customize-customize-form (var)
+  "Create a form for customizing `var'"
+  (format "(customize-variable-other-window '%s)" var))
+
+(defun check-customize-write-missing-forms (missing)
+  "Write the `missing' forms into the current buffer"
+  (dolist (v missing)
+    (insert (check-customize-customize-form v))
+    (insert "\n")))
+
 
 (defun check-customize-get-missing (variables file-content)
   "Return the variables that are not customized by
@@ -41,6 +70,41 @@
   (cl-assert (bufferp custom-buffer) t "Expecting a buffer!")
   (mapcar 'cadr (cl-subseq (read custom-buffer) 1)))
 
+;; Obsolete ;;;;;;;;;;;;;;;;;;;;;
+(defun check-customize-prompt (var)
+  "Ask if variable VAR should be customized now, ignored now or
+add to ignored variables. The answer is returned as one of the
+symbols: `ignore', `custom', or `add'"
+  (check-customize-read-string-validate
+   (format "Variable %s is not customized! (i)gnore once, (a)dd to ignored, (c)ustomize now"
+	   var)
+   (lambda (answer) 
+     (cond
+      ((string= answer "i") 'ignore)
+      ((string= answer "a") 'add)
+      ((string= answer "c") 'custom)
+      (t (error "Invalid answer: %s" answer))))
+   nil
+   nil
+   "i"))
+
+;; Todo: move this to a general utils module
+(defun check-customize-read-string-validate (prompt parser &optional initial-input history default-value inherit-input-method)
+  "Read a string from the minibuffer, apply the function PARSER
+  to the answer and return the result. If PARSER signals an error, the user is promped again."
+  (let ((answer nil)
+	(should-ask t))
+    (while should-ask
+      (condition-case err
+	  (setq answer (apply parser (read-string prompt
+						  initial-input
+						  history
+						  default-value
+						  inherit-input-method)))
+	(error
+	 (message (cdr err))
+	 (setq should-ask t))))
+    answer))
 
 ;; Tests ;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'ert)
@@ -138,5 +202,18 @@
 	     (check-customize-read-customs (current-buffer)))
 	   (check-customize-test-custom-content))))
 
+(ert-deftest test-variable-form ()
+  "customize form for a missing variable"
+  (should (equal (check-customize-customize-form 'bbdb-file-remote)
+		 "(customize-variable-other-window 'bbdb-file-remote)")))
+(ert-deftest test-variable-missing-forms ()
+  "emit customize forms for a bunch of missing variables"
+  (let ((missing '(bbdb-file-remote
+		   is-missing))
+	(output (concat "(customize-variable-other-window 'bbdb-file-remote)\n"
+			"(customize-variable-other-window 'is-missing)\n")))
+    (should (equal (with-temp-buffer (check-customize-write-missing-forms missing)
+				     (buffer-string))
+		   output))))
 
 (provide 'check-customize)
