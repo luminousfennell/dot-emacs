@@ -16,15 +16,19 @@
   "Check if the variables in `variables' were customized in file
   `custom-file'. Checks for specific variables can be disabled by
   customizing `check-customize-ignore-list'"
-  (let ((missing (check-customize-get-missing
+  (let* ((customs (check-customize-read-customs-from-file custom-file))
+	(missing (check-customize-get-missing
 		  variables
-		  (check-customize-read-customs-from-file custom-file))))
-    (if (not (null missing))
+		  customs))
+	(additional (check-customize-get-additional
+		     (append variables '(check-customize-ignore-list))
+		     customs)))
+    (if (not (and (null missing) (null additional)))
 	(let ((buf (check-customize-create-buffer))
-	      (win (split-window))
-	      )
+	      (win (split-window)))
 	  (with-current-buffer buf
-	    (check-customize-write-missing-forms missing))
+	    (check-customize-write-missing-forms missing)
+	    (check-customize-write-additional-values additional))
 	  (set-window-buffer win buf))
       (message "check-customize: all required customizations are present"))))
 
@@ -47,16 +51,24 @@
     (insert (check-customize-customize-form v))
     (insert "\n")))
 
+(defun check-customize-write-additional-values (additional)
+  (insert ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n")
+  (insert ";; additional custumizations that I don't know about:\n;;\n")
+  (dolist (v additional)
+    (insert (format ";; %s\n" v))))
 
 (defun check-customize-get-missing (variables file-content)
   "Return the variables that are not customized by
   `file-content' (a list with customizations, like the
   `custom-set-variables' variable)."
-
     (let ((to-check (remove-if () variables))
 	  (customs (mapcar 'car file-content)))
     (remove-if (lambda (x) (or (member x check-customize-ignore-list)
 			       (member x customs))) to-check)))
+
+(defun check-customize-get-additional (variables file-content)
+  "Return the variables that are customized but not listed as needed. The result is an alist of variables and values."
+  (remove-if (lambda (x) (member (car x) variables)) file-content))
 
 (defun check-customize-read-customs-from-file (custom-file-name)
   "Read the variables set in a custom file (from a file)."
@@ -192,6 +204,21 @@ symbols: `ignore', `custom', or `add'"
 	      is-ignored)
 	    (check-customize-test-custom-content)))
 	   '(is-missing))))
+
+(ert-deftest test-additional ()
+  "some additional variables"
+  (let ((vars '(bbdb-file-remote
+		some-var-1
+		some-var-2
+		is-ignored))
+	(customs '((bbdb-file-remote . "some/file/name")
+		   (bbdb-file-remote-2 . "some/file/name2")
+		   (is-ignored . "ignore-me")
+		   (some-var-1 . "var1")
+		   (some-var-3 . "var3"))))
+    (should (equal (check-customize-get-additional vars customs)
+		   '((bbdb-file-remote-2 . "some/file/name2")
+		     (some-var-3 . "var3"))))))
 
 (ert-deftest test-parse-custom-file ()
   "reading the custom file works as expected"
