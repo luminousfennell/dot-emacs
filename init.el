@@ -114,6 +114,7 @@
 	       (setq
 		reftex-plug-into-AUCTeX t
 		TeX-auto-save t
+                TeX-PDF-mode t
 		TeX-parse-self t
 		TeX-source-correlate-mode t)
 	       ;; keybindings
@@ -192,9 +193,9 @@
 		(load "dired-x" nil t)
 		(dired-omit-mode 1)
 		(auto-revert-mode t))
-		;; keybindings
-		(evil-define-key 'normal dired-mode-map ")"
-		  'dired-details-toggle))
+              ;; keybindings
+              (evil-define-key 'normal dired-mode-map ")"
+                'dired-details-toggle))
     ;; TODO: is this still needed?
     (add-hook 'dired-load-hook (lambda ()
 				 (load "dired-x")))))
@@ -224,9 +225,13 @@
   )
 
 (use-package agda2
-  :init (add-hook 'agda2-mode-hook
-		  (lambda ()
-		    (dolist (th custom-enabled-themes) (disable-theme th)))))
+  :init
+  (progn
+    (setq agda2-include-dirs '("." "./lib/src"))
+    (add-hook 'agda2-mode-hook
+              (lambda ()
+                (dolist (th custom-enabled-themes) (disable-theme th))))))
+
 
 (use-package haskell-mode
   :ensure haskell-mode
