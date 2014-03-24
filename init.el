@@ -26,6 +26,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq
  auto-revert-verbose nil
+ auto-save-list-file-prefix "~/.cache/emacs.d/auto-save-list/.saves-"
  column-number-mode t
  display-time-mode t
  frame-title-format "%b %f"
@@ -35,11 +36,11 @@
  inhibit-startup-screen t
  make-backup-files nil
  ring-bell-function 'ignore
- show-paren-mode t
  vc-follow-symlinks nil
  x-select-enable-clipboard t
  )
-
+;; switches
+(show-paren-mode t)
 ;; bindings
 (defun my-bind-window-movement ()
   (global-set-key "\C-x\C-j" 'windmove-left)   
@@ -47,6 +48,9 @@
   (global-set-key "\C-x\C-i" 'windmove-up)          
   (global-set-key "\C-x\C-k" 'windmove-down))
 (my-bind-window-movement)
+;; hooks
+(add-hook 'text-mode-hook
+          '(turn-on-flyspell text-mode-hook-identify))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Package customization 
@@ -63,6 +67,15 @@
 (add-to-list 'load-path "~/.nix-profile/share/emacs/site-lisp/ProofGeneral/generic")
 
 ;; begin config
+(use-package vc
+  :init (progn
+          (setq
+           vc-follow-symlinks nil
+           ;; TODO: remove
+           ;; vc-annotate-background "#2B2B2B"
+           ;; vc-annotate-color-map (quote ((20 . "#BC8383") (40 . "#CC9393") (60 . "#DFAF8F") (80 . "#D0BF8F") (100 . "#E0CF9F") (120 . "#F0DFAF") (140 . "#5F7F5F") (160 . "#7F9F7F") (180 . "#8FB28F") (200 . "#9FC59F") (220 . "#AFD8AF") (240 . "#BFEBBF") (260 . "#93E0E3") (280 . "#6CA0A3") (300 . "#7CB8BB") (320 . "#8CD0D3") (340 . "#94BFF3") (360 . "#DC8CC3")))
+           ;; vc-annotate-very-old-color "#DC8CC3"
+           )))
 
 (use-package ediff
   :init (setq ediff-window-setup-function (quote ediff-setup-windows-plain)))
