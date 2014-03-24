@@ -35,6 +35,7 @@
  indent-tabs-mode nil
  inhibit-startup-screen t
  make-backup-files nil
+ ps-print-header nil
  ring-bell-function 'ignore
  vc-follow-symlinks nil
  x-select-enable-clipboard t
@@ -174,10 +175,13 @@
     	      (lambda ()
     		(use-package my-org-utils)
     		(use-package my-org-fixes)
-    		;; agenda files... set in the load hook in order to access org-directory
+    		;; set the following in the load hook in order to access org-directory
     		(setq org-agenda-files
     		      (concat (file-name-as-directory org-directory)
-    			      "agenda-files.lst"))))
+    			      "agenda-files.lst")
+                      org-default-notes-file
+                      (concat (file-name-as-directory org-directory)
+    			      "notes.org"))))
     (add-hook 'org-mode-hook
     	      (lambda ()
     		(flyspell-mode -1)))
