@@ -8,7 +8,8 @@
 ;;  
 ;;  - enhance the warning buffer with sophisticated widgets
 
-(defcustom check-customize-ignore-list nil 
+(defcustom check-customize-ignore-list
+  '(auth-source-gpg-encrypt-to)
   "A list of variables that should be ignored by check-customize."
   :type '(repeat variable))
 
