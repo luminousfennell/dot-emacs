@@ -51,7 +51,7 @@
 (my-bind-window-movement)
 ;; hooks
 (add-hook 'text-mode-hook
-          '(turn-on-flyspell text-mode-hook-identify))
+          'turn-on-flyspell)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Package customization 
