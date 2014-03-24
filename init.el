@@ -228,14 +228,24 @@
 		  'flyspell-auto-correct-word)))))
 
 
+;; coq
 (use-package proof-site
   :init
   (progn
     (add-hook 'coq-mode-hook
   	      (lambda ()
-  		(setq proof-find-theorems-command "SearchAbout %s")
-  		)))
-  )
+  		(setq
+                 coq-compile-before-require t
+                 coq-one-command-per-line nil
+                 coq-script-indent nil
+                 proof-find-theorems-command "SearchAbout %s"
+                 proof-auto-action-when-deactivating-scripting (quote retract)
+                 proof-electric-terminator-enable nil
+                 proof-follow-mode (quote ignore)
+                 proof-imenu-enable nil
+                 proof-script-fly-past-comments t
+                 proof-strict-read-only t
+                 proof-three-window-enable t)))))
 
 (use-package agda2
   :init
