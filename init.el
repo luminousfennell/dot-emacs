@@ -198,4 +198,13 @@
 		  'flyspell-auto-correct-word)))))
 
 
+(use-package proof-site
+  :disabled t 
+  :mode ("\\.v\\'" . coq-mode)
+  :init
+  (progn
+    (add-hook coq-mode-hook
+	      (lambda ()
+		(setq proof-find-theorems-command "SearchAbout %s")
+		))))
 ;; TODO: include the init scripts from work
