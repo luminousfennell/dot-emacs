@@ -35,7 +35,7 @@
 (defun my-LaTeX-environment ()
   (interactive)
   (flet ((LaTeX-insert-environment (environment &optional extra) 
-                                   (my-LaTeX-insert-environment environment extra)))
+ 
     (call-interactively 'LaTeX-environment)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

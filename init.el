@@ -48,13 +48,28 @@
   (global-set-key "\C-x\C-k" 'windmove-down))
 (my-bind-window-movement)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Package customization 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'use-package)
 
+;; path initialization
+;; agda
+(condition-case err
+    (load-file (shell-command-to-string "agda-mode locate"))
+  (error (message "Warning: %s" (error-message-string err))))
+;; coq
+;; TODO: why isn't nix handling this?
+(add-to-list 'load-path "~/.nix-profile/share/emacs/site-lisp/ProofGeneral/generic")
+
+;; begin config
+
 (use-package ediff
   :init (setq ediff-window-setup-function (quote ediff-setup-windows-plain)))
+
+(use-package paredit
+  :ensure paredit
+  :init (add-hook 'emacs-lisp-mode-hook (lambda () (paredit-mode t))))
 
 ;; evil mode
 (use-package evil
@@ -199,12 +214,36 @@
 
 
 (use-package proof-site
-  :disabled t 
-  :mode ("\\.v\\'" . coq-mode)
   :init
   (progn
-    (add-hook coq-mode-hook
-	      (lambda ()
-		(setq proof-find-theorems-command "SearchAbout %s")
-		))))
-;; TODO: include the init scripts from work
+    (add-hook 'coq-mode-hook
+  	      (lambda ()
+  		(setq proof-find-theorems-command "SearchAbout %s")
+  		)))
+  )
+
+(use-package agda2
+  :init (add-hook 'agda2-mode-hook
+		  (lambda ()
+		    (dolist (th custom-enabled-themes) (disable-theme th)))))
+
+(use-package haskell-mode
+  :ensure haskell-mode
+  ;; TODO: should work without pair, but simply the pattern (see github docs)
+  :mode ("\\.l?hs\\'" . haskell-mode)
+  :init (add-hook 'haskell-mode-hook
+		  (lambda ()
+		    ;; switches
+		    (use-package hi2
+		      :ensure hi2)
+		    (turn-on-hi2)
+		    ;;(turn-on-haskell-simple-indent)
+		    ;; keybindings
+		    (evil-define-key 'insert haskell-mode-map (kbd "RET") 'newline)
+		    (define-key haskell-mode-map (kbd "C-,") 'haskell-move-nested-left)
+		    (define-key haskell-mode-map (kbd "C-.") 'haskell-move-nested-right)
+		    (evil-define-key 'normal haskell-mode-map (kbd "C-,") 'haskell-move-nested-left)
+		    (evil-define-key 'normal haskell-mode-map (kbd "C-.") 'haskell-move-nested-right)
+		    (define-key haskell-mode-map [f8] 'haskell-navigate-imports)
+		    (evil-define-key 'normal haskell-mode-map [f8] 'haskell-navigate-imports)
+		    )))
