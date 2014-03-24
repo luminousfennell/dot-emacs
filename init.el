@@ -253,3 +253,6 @@
 		    (define-key haskell-mode-map [f8] 'haskell-navigate-imports)
 		    (evil-define-key 'normal haskell-mode-map [f8] 'haskell-navigate-imports)
 		    )))
+
+;; TODO: make a melpa package
+(use-package ottmode)
