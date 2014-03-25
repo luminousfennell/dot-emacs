@@ -8,7 +8,11 @@
 ;;  
 ;;  - enhance the warning buffer with sophisticated widgets
 
-(defcustom check-customize-ignore-list nil 
+(defcustom check-customize-ignore-list
+  '(auth-source-gpg-encrypt-to
+    custom-enabled-themes
+    custom-safe-themes
+    safe-local-variable-values)
   "A list of variables that should be ignored by check-customize."
   :type '(repeat variable))
 

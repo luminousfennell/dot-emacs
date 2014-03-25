@@ -26,6 +26,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq
  auto-revert-verbose nil
+ auto-save-list-file-prefix "~/.cache/emacs.d/auto-save-list/.saves-"
  column-number-mode t
  display-time-mode t
  frame-title-format "%b %f"
@@ -34,12 +35,13 @@
  indent-tabs-mode nil
  inhibit-startup-screen t
  make-backup-files nil
+ ps-print-header nil
  ring-bell-function 'ignore
- show-paren-mode t
  vc-follow-symlinks nil
  x-select-enable-clipboard t
  )
-
+;; switches
+(show-paren-mode t)
 ;; bindings
 (defun my-bind-window-movement ()
   (global-set-key "\C-x\C-j" 'windmove-left)   
@@ -47,6 +49,9 @@
   (global-set-key "\C-x\C-i" 'windmove-up)          
   (global-set-key "\C-x\C-k" 'windmove-down))
 (my-bind-window-movement)
+;; hooks
+(add-hook 'text-mode-hook
+          'turn-on-flyspell)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Package customization 
@@ -63,6 +68,15 @@
 (add-to-list 'load-path "~/.nix-profile/share/emacs/site-lisp/ProofGeneral/generic")
 
 ;; begin config
+(use-package vc
+  :init (progn
+          (setq
+           vc-follow-symlinks nil
+           ;; TODO: remove
+           ;; vc-annotate-background "#2B2B2B"
+           ;; vc-annotate-color-map (quote ((20 . "#BC8383") (40 . "#CC9393") (60 . "#DFAF8F") (80 . "#D0BF8F") (100 . "#E0CF9F") (120 . "#F0DFAF") (140 . "#5F7F5F") (160 . "#7F9F7F") (180 . "#8FB28F") (200 . "#9FC59F") (220 . "#AFD8AF") (240 . "#BFEBBF") (260 . "#93E0E3") (280 . "#6CA0A3") (300 . "#7CB8BB") (320 . "#8CD0D3") (340 . "#94BFF3") (360 . "#DC8CC3")))
+           ;; vc-annotate-very-old-color "#DC8CC3"
+           )))
 
 (use-package ediff
   :init (setq ediff-window-setup-function (quote ediff-setup-windows-plain)))
@@ -114,6 +128,7 @@
 	       (setq
 		reftex-plug-into-AUCTeX t
 		TeX-auto-save t
+                TeX-PDF-mode t
 		TeX-parse-self t
 		TeX-source-correlate-mode t)
 	       ;; keybindings
@@ -160,10 +175,13 @@
     	      (lambda ()
     		(use-package my-org-utils)
     		(use-package my-org-fixes)
-    		;; agenda files... set in the load hook in order to access org-directory
+    		;; set the following in the load hook in order to access org-directory
     		(setq org-agenda-files
     		      (concat (file-name-as-directory org-directory)
-    			      "agenda-files.lst"))))
+    			      "agenda-files.lst")
+                      org-default-notes-file
+                      (concat (file-name-as-directory org-directory)
+    			      "notes.org"))))
     (add-hook 'org-mode-hook
     	      (lambda ()
     		(flyspell-mode -1)))
@@ -174,7 +192,8 @@
 (use-package dired
   :init
   (progn
-    (use-package dired-details+)
+    (use-package dired-details+
+      :ensure dired-details+)
     (setq
      dired-bind-jump nil
      dired-details-hidden-string ""
@@ -191,9 +210,9 @@
 		(load "dired-x" nil t)
 		(dired-omit-mode 1)
 		(auto-revert-mode t))
-		;; keybindings
-		(evil-define-key 'normal dired-mode-map ")"
-		  'dired-details-toggle))
+              ;; keybindings
+              (evil-define-key 'normal dired-mode-map ")"
+                'dired-details-toggle))
     ;; TODO: is this still needed?
     (add-hook 'dired-load-hook (lambda ()
 				 (load "dired-x")))))
@@ -213,19 +232,33 @@
 		  'flyspell-auto-correct-word)))))
 
 
+;; coq
 (use-package proof-site
   :init
   (progn
     (add-hook 'coq-mode-hook
   	      (lambda ()
-  		(setq proof-find-theorems-command "SearchAbout %s")
-  		)))
-  )
+  		(setq
+                 coq-compile-before-require t
+                 coq-one-command-per-line nil
+                 coq-script-indent nil
+                 proof-find-theorems-command "SearchAbout %s"
+                 proof-auto-action-when-deactivating-scripting (quote retract)
+                 proof-electric-terminator-enable nil
+                 proof-follow-mode (quote ignore)
+                 proof-imenu-enable nil
+                 proof-script-fly-past-comments t
+                 proof-strict-read-only t
+                 proof-three-window-enable t)))))
 
 (use-package agda2
-  :init (add-hook 'agda2-mode-hook
-		  (lambda ()
-		    (dolist (th custom-enabled-themes) (disable-theme th)))))
+  :init
+  (progn
+    (setq agda2-include-dirs '("." "./lib/src"))
+    (add-hook 'agda2-mode-hook
+              (lambda ()
+                (dolist (th custom-enabled-themes) (disable-theme th))))))
+
 
 (use-package haskell-mode
   :ensure haskell-mode
@@ -247,3 +280,10 @@
 		    (define-key haskell-mode-map [f8] 'haskell-navigate-imports)
 		    (evil-define-key 'normal haskell-mode-map [f8] 'haskell-navigate-imports)
 		    )))
+
+;; TODO: make a melpa package
+(use-package ottmode)
+
+(use-package bbdb
+  :ensure bbdb
+  )
