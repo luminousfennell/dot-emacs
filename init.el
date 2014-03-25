@@ -283,3 +283,7 @@
 
 ;; TODO: make a melpa package
 (use-package ottmode)
+
+(use-package bbdb
+  :ensure bbdb
+  )
