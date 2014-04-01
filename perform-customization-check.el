@@ -5,6 +5,7 @@
 
 (defvar check-customize-list
   '(org-directory
+    org-mobile-directory
     user-full-name
     user-mail-address)
   )
