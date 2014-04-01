@@ -287,3 +287,14 @@
 (use-package bbdb
   :ensure bbdb
   )
+
+(use-package fsharp-mode
+  :ensure fsharp-mode
+  :mode ("\\.fsi?\\'" . fsharp-mode)
+  :init (setq inferior-fsharp-program "fsi --readline-"
+	      fsharp-compiler "fsc"))
+
+;; ocaml
+(use-package tuareg
+  :ensure tuareg
+  :mode ("\\.ml\\'" . tuareg-mode))
