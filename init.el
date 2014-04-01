@@ -32,6 +32,7 @@
  frame-title-format "%b %f"
  global-auto-revert-mode t
  global-auto-revert-non-file-buffers t
+ global-auto-revert-ignore-modes '(buffer-menu-mode)
  indent-tabs-mode nil
  inhibit-startup-screen t
  make-backup-files nil
