@@ -299,3 +299,7 @@
 (use-package tuareg
   :ensure tuareg
   :mode ("\\.ml\\'" . tuareg-mode))
+
+(use-package markdown-mode
+  :ensure markdown-mode
+  :mode ("\\.md\\'" . markdown-mode))
