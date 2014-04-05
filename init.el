@@ -321,8 +321,9 @@
 
 (use-package bbdb
   :ensure bbdb
-  :init (setq bbdb-complete-mail-allow-cycling t)
-  )
+  :init (progn
+	  (setq bbdb-complete-mail-allow-cycling t)
+	  (bbdb-initialize 'gnus 'message)))
 
 (use-package fsharp-mode
   :ensure fsharp-mode
@@ -345,11 +346,24 @@
   :init (setq gnus-propagate-marks t
 	      gnus-save-newsrc-file nil
 	      gnus-use-dribble-file nil
-	      mail-user-agent 'gnus-user-agent))
-
+	      gnus-agent nil
+	      gnus-summary-line-format "%U%R%I %&user-date; %(%[%-23,23f%]%) %s\n"
+	      gnus-gcc-mark-as-read t
+	      mail-user-agent 'gnus-user-agent
+	      nnmail-crosspost nil))
 (use-package message
-  :init (setq message-citation-line-format "On %a, %b %d %Y at %R %z, %N wrote:\n"
-	      message-citation-line-function 'message-insert-formatted-citation-line
-	      message-confirm-send t
-	      message-sendmail-f-is-evil t
-	      mm-text-html-renderer (quote w3m)))
+  :init (progn
+	  (setq message-citation-line-format "On %a, %b %d %Y at %R %z, %N wrote:\n"
+		message-citation-line-function 'message-insert-formatted-citation-line
+		message-confirm-send t
+		message-sendmail-f-is-evil t
+		mm-text-html-renderer (quote w3m)
+		mm-text-html-renderer 'w3m
+		)
+	  (add-hook 'mail-mode-hook 'mail-abbrevs-mode)
+	  (use-package nnir)
+	  (use-package w3m
+	    :ensure w3m
+	    :init (define-key
+		    w3m-minor-mode-map (kbd "<RET>")
+		    'w3m-view-url-with-external-browser))))
