@@ -4,7 +4,9 @@
 (require 'check-customize "~/.emacs.d/check-customize.el")
 
 (defvar check-customize-list
-  '(org-directory
+  '(bbdb-file-remote
+    gnus-posting-styles
+    org-directory
     org-mobile-directory
     user-full-name
     user-mail-address)
