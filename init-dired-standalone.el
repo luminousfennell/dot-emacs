@@ -1,7 +1,7 @@
 (load-file "~/.emacs.d/init-common.el")
-(load-file "~/.emacs.d/init-dired.el")
+(load-file (concat my-emacs-home "/init-dired.el"))
 
-(require 'dired-dtach "~/.emacs.d/dired-dtach.el")
+(require 'dired-dtach (concat my-emacs-home "~/.emacs.d/dired-dtach.el"))
 
 ;; some special keymaps for dired standalone
 (add-hook 'dired-mode-hook (lambda ()

@@ -1,9 +1,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Initialization and bootstrapping 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq my-emacs-home (file-name-directory user-init-file))
+(when (string= (getenv "HOME") (directory-file-name my-emacs-home))
+  (error "Initialization error: my-emacs-home is the same as HOME"))
 
 ;; personal extensions
-(add-to-list 'load-path "~/.emacs.d/lib")
+(add-to-list 'load-path (concat my-emacs-home "lib"))
 
 ;; init package management
 (require 'package)
@@ -17,9 +20,9 @@
 (package-initialize)
 
 ;; initialize customization
-(setq custom-file "~/.emacs.d/init-custom.el")
+(setq custom-file (concat my-emacs-home "init-custom.el"))
 (load custom-file)
-(load-file "~/.emacs.d/perform-customization-check.el")
+(load-file (concat my-emacs-home "perform-customization-check.el"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Core editor settings 
@@ -95,7 +98,7 @@
 	   evil-default-cursor '(t ignore)
 	   evil-want-fine-undo t
 	   )
-	  (load-file "~/.emacs.d/perform-evil-mode-bindings.el")))
+	  (load-file (concat my-emacs-home "perform-evil-mode-bindings.el"))))
 (use-package surround
   :ensure surround
   :init (global-surround-mode t))
