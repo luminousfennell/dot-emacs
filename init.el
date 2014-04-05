@@ -32,6 +32,7 @@
  frame-title-format "%b %f"
  global-auto-revert-mode t
  global-auto-revert-non-file-buffers t
+ global-auto-revert-ignore-modes '(buffer-menu-mode)
  indent-tabs-mode nil
  inhibit-startup-screen t
  make-backup-files nil
@@ -160,7 +161,38 @@
      org-mobile-force-id-on-agenda-items nil
      org-pretty-entities nil
      org-startup-indented t
-     org-yank-adjusted-subtrees t)
+     org-yank-adjusted-subtrees t
+     ;; export
+     org-export-latex-default-packages-alist '(("" "amsmath" nil)
+					       ("AUTO" "inputenc" t)
+					       ("T1" "fontenc" t)
+					       ("" "fixltx2e" nil)
+					       ("" "graphicx" t)
+					       ("" "longtable" nil)
+					       ("" "float" nil)
+					       ("" "wrapfig" nil)
+					       ("" "soul" t)
+					       ("" "textcomp" t)
+					       ("" "marvosym" t)
+					       ("" "wasysym" t)
+					       ("" "latexsym" t)
+					       ("" "amssymb" t)
+					       ("" "hyperref" nil)
+					       "\\tolerance=1000")
+     org-export-latex-listings t
+     org-file-apps '((auto-mode . emacs)
+		     ("\\.mm\\'" . default)
+		     ("\\.x?html?\\'" . default)
+		     (system . "gvfs-open %s")
+		     ("pdf" . "zathura %s"))
+     org-format-latex-options '(:foreground default
+					    :background default
+					    :scale 1.3
+					    :html-foreground "Black"
+					    :html-background "Transparent"
+					    :html-scale 1.0
+					    :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))
+     )
     ;; keybindings
     ;; TODO: why is :bind not working?
     (bind-key "\C-ca"  'org-agenda)
@@ -286,4 +318,35 @@
 
 (use-package bbdb
   :ensure bbdb
+  :init (setq bbdb-complete-mail-allow-cycling t)
   )
+
+(use-package fsharp-mode
+  :ensure fsharp-mode
+  :mode ("\\.fsi?\\'" . fsharp-mode)
+  :init (setq inferior-fsharp-program "fsi --readline-"
+	      fsharp-compiler "fsc"))
+
+;; ocaml
+(use-package tuareg
+  :ensure tuareg
+  :mode ("\\.ml\\'" . tuareg-mode))
+
+(use-package markdown-mode
+  :ensure markdown-mode
+  :mode ("\\.md\\'" . markdown-mode))
+
+;; mail
+;; TODO: maybe only load this when starting gnus-standalone?
+(use-package gnus
+  :init (setq gnus-propagate-marks t
+	      gnus-save-newsrc-file nil
+	      gnus-use-dribble-file nil
+	      mail-user-agent 'gnus-user-agent))
+
+(use-package message
+  :init (setq message-citation-line-format "On %a, %b %d %Y at %R %z, %N wrote:\n"
+	      message-citation-line-function 'message-insert-formatted-citation-line
+	      message-confirm-send t
+	      message-sendmail-f-is-evil t
+	      mm-text-html-renderer (quote w3m)))
