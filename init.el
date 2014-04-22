@@ -338,7 +338,10 @@
 
 (use-package markdown-mode
   :ensure markdown-mode
-  :mode ("\\.md\\'" . markdown-mode))
+  :mode ("\\.md\\'" . markdown-mode)
+  :init (add-hook 'markdown-mode-hook (lambda ()
+					(require 'org)
+					(orgtbl-mode t))))
 
 ;; mail
 ;; TODO: maybe only load this when starting gnus-standalone?
