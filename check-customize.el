@@ -12,9 +12,23 @@
   '(auth-source-gpg-encrypt-to
     custom-enabled-themes
     custom-safe-themes
-    safe-local-variable-values)
+    safe-local-variable-values
+    smtpmail-local-domain
+    smtpmail-smtp-server
+    smtpmail-smtp-service
+    )
   "A list of variables that should be ignored by check-customize."
   :type '(repeat variable))
+
+(defvar check-customize-default-ignore-list
+  '(auth-source-gpg-encrypt-to
+    custom-enabled-themes
+    custom-safe-themes
+    safe-local-variable-values
+    smtpmail-local-domain
+    smtpmail-smtp-server
+    smtpmail-smtp-service)
+  "Default list of ignored variables")
 
 (defun check-customize (variables custom-file)
   "Check if the variables in `variables' were customized in file
@@ -26,7 +40,9 @@
 		  customs))
 	(additional (check-customize-get-additional
 		     (cons 'check-customize-ignore-list
-			   (append check-customize-ignore-list variables))
+			   (append check-customize-ignore-list
+				   check-customize-default-ignore-list
+				   variables))
 		     customs)))
     (if (not (and (null missing) (null additional)))
 	(let ((buf (check-customize-create-buffer))
@@ -68,8 +84,11 @@
   `custom-set-variables' variable)."
     (let ((to-check (remove-if () variables))
 	  (customs (mapcar 'car file-content)))
-    (remove-if (lambda (x) (or (member x check-customize-ignore-list)
-			       (member x customs))) to-check)))
+    (remove-if
+     (lambda (x)
+       (or (member x (append check-customize-ignore-list
+			     check-customize-default-ignore-list))
+	   (member x customs))) to-check)))
 
 (defun check-customize-get-additional (variables file-content)
   "Return the variables that are customized but not listed as needed. The result is an alist of variables and values."

@@ -6,6 +6,7 @@
 (defvar check-customize-list
   '(bbdb-file-remote
     gnus-posting-styles
+    message-send-mail-function
     org-directory
     org-mobile-directory
     user-full-name
