@@ -97,6 +97,9 @@
   :init (global-surround-mode t))
 ;; end evil mode
 
+(use-package goto-last-change
+  :ensure goto-last-change)
+
 (use-package tramp
   :init (add-to-list 'tramp-remote-path "/var/run/current-system/sw/bin"))
 
