@@ -28,6 +28,7 @@
 ;; Core editor settings 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq
+ auth-sources '("~/.authinfo.gpg")
  auto-revert-verbose nil
  auto-save-list-file-prefix "~/.cache/emacs.d/auto-save-list/.saves-"
  column-number-mode t
