@@ -357,19 +357,12 @@
 		mail-user-agent 'gnus-user-agent
 		nnmail-crosspost nil)
 	  (use-package my-mbsync)
-	  (let ((get-news ))
-	    (define-key gnus-group-mode-map
-	      (kbd "C-c g")
-	      (lambda ()
-		(interactive)
-		(my-mbsync)
-		(gnus-group-get-new-news)))
-	    (define-key gnus-summary-mode-map
-	      (kbd "C-c g")
-	      (lambda ()
-		(interactive)
-		(my-mbsync)
-		(gnus-summary-rescan-group))))))
+	  (define-key gnus-group-mode-map
+	    (kbd "C-c g")
+	    'my-mbsync-group)
+	  (define-key gnus-summary-mode-map
+	    (kbd "C-c g")
+	    'my-mbsync-summary)))
 (use-package message
   :init (progn
 	  (setq message-citation-line-format "On %a, %b %d %Y at %R %z, %N wrote:\n"
