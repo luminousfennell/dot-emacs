@@ -1,12 +1,14 @@
-(load-file "~/.emacs.d/init-common.el")
-(load-file "~/.emacs.d/init-dired.el")
+;; (load-file "~/.emacs.d/init-common.el")
+;; (load-file "~/.emacs.d/init-dired.el")
+(load-file "~/.emacs.d/init.el")
 
-(require 'dired-dtach "~/.emacs.d/dired-dtach.el")
+;; (require 'dired-dtach "~/.emacs.d/dired-dtach.el")
+(require 'dired-fm)
 
 ;; some special keymaps for dired standalone
 (add-hook 'dired-mode-hook (lambda ()
-                             (evil-define-key 'normal dired-mode-map "\C-m" 'dired-dtach-find-file)
-                             (define-key dired-mode-map (kbd "C-c t")  'dired-dtach-open-terminal)
+                             (evil-define-key 'normal dired-mode-map "\C-m" 'dired-fm-open)
+                             (define-key dired-mode-map (kbd "C-c t")  'dired-fm-open-terminal)
 			     ;; TODO fix ido-gvfs... use dtach
                              ;; (define-key dired-mode-map (kbd "C-x C-f") 'ido-find-file-gvfs)
                              (define-key 
