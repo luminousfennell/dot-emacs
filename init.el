@@ -275,7 +275,6 @@
     (add-hook 'coq-mode-hook
   	      (lambda ()
   		(setq
-                 coq-compile-before-require t
                  coq-one-command-per-line nil
                  coq-script-indent nil
                  proof-find-theorems-command "SearchAbout %s"
