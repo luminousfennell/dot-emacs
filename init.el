@@ -284,7 +284,8 @@
                  proof-imenu-enable nil
                  proof-script-fly-past-comments t
                  proof-strict-read-only t
-                 proof-three-window-enable t)))))
+                 proof-three-window-enable nil
+		 proof-auto-raise-buffers nil)))))
 
 (use-package agda2
   :init
