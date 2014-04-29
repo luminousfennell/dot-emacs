@@ -187,8 +187,9 @@
      org-file-apps '((auto-mode . emacs)
 		     ("\\.mm\\'" . default)
 		     ("\\.x?html?\\'" . default)
-		     (system . "gvfs-open %s")
-		     ("pdf" . "zathura %s"))
+		     (system . "firefox %s")
+		     ("\\.pdf\\'" . system)
+		     (t . system))
      org-format-latex-options '(:foreground default
 					    :background default
 					    :scale 1.3
