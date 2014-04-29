@@ -151,6 +151,7 @@
   :mode ("\\.org\\'" . org-mode)
   :init
   (progn
+    (use-package dired-fm)
     (setq
      org-highest-priority ?A
      org-default-priority ?M
@@ -186,8 +187,8 @@
      org-file-apps '((auto-mode . emacs)
 		     ("\\.mm\\'" . default)
 		     ("\\.x?html?\\'" . default)
-		     (system . "firefox %s")
-		     ("\\.pdf\\'" . system)
+		     (system . (dired-fm-spawn "xdg-open" (list file)))
+		     ("\\.pdf\\'" . default)
 		     (t . system))
      org-format-latex-options '(:foreground default
 					    :background default
