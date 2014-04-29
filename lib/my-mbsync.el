@@ -4,6 +4,7 @@
 (defvar my-mbsync-process-name "mbsync")
 (defvar my-mbsync-process-buffer "*mbsync*")
 (defun my-mbsync ()
+  (message "Checking for mail...")
   (start-process my-mbsync-process-name
 		 my-mbsync-process-buffer
 		 "mbsync"
