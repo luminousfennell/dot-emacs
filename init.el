@@ -363,7 +363,17 @@
 	    'my-mbsync-group)
 	  (define-key gnus-summary-mode-map
 	    (kbd "C-c g")
-	    'my-mbsync-summary)))
+	    'my-mbsync-summary)
+	  (let ((mail-update-hooks
+		 '(
+		   gnus-exit-group-hook
+		   gnus-summary-article-delete-hook
+		   ;; TODO: determine if it is usefull to update after expirery after all
+		   ;; gnus-summary-article-expire-hook
+		   gnus-summary-article-move-hook
+		   )))
+	    (dolist (hook mail-update-hooks)
+	      (add-hook hook 'my-mbsync-update)))))
 (use-package message
   :init (progn
 	  (setq message-citation-line-format "On %a, %b %d %Y at %R %z, %N wrote:\n"

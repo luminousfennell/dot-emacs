@@ -4,7 +4,7 @@
 (defvar my-mbsync-process-name "mbsync")
 (defvar my-mbsync-process-buffer "*mbsync*")
 (defun my-mbsync ()
-  (message "Checking for mail...")
+  (message "Synchronizing mail...")
   (start-process my-mbsync-process-name
 		 my-mbsync-process-buffer
 		 "mbsync"
@@ -24,3 +24,7 @@
   (my-mbsync)
   (my-mbsync-set-finish-action 'gnus-summary-rescan-group))
 
+(defun my-mbsync-update ()
+  "To be called when modifying the mailbox in any way, e.g. by changing the marks, or moving mail."
+  (my-mbsync)
+  (my-mbsync-set-finish-action (lambda () (message "mail sync complete"))))
