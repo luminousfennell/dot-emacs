@@ -364,6 +364,9 @@
 	  (define-key gnus-summary-mode-map
 	    (kbd "C-c g")
 	    'my-mbsync-summary)
+	  ;; sync on startup
+	  (add-hook 'gnus-startup-hook 'my-mbsync-group)
+	  ;; sync mark updates
 	  (let ((mail-update-hooks
 		 '(
 		   gnus-exit-group-hook
@@ -371,6 +374,7 @@
 		   ;; TODO: determine if it is usefull to update after expirery after all
 		   ;; gnus-summary-article-expire-hook
 		   gnus-summary-article-move-hook
+		   message-sent-hook
 		   )))
 	    (dolist (hook mail-update-hooks)
 	      (add-hook hook 'my-mbsync-update)))))
