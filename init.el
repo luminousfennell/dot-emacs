@@ -8,6 +8,12 @@
 ;; personal extensions
 (add-to-list 'load-path (concat my-emacs-home "lib"))
 
+;; start a server if requested by EMACS_SERVER_FILE
+(let ((server-file (getenv "EMACS_SERVER_NAME")))
+  (when server-file
+    (setq server-name server-file)
+    (server-start)))
+
 ;; init package management
 (require 'package)
 (setq 
@@ -124,27 +130,29 @@
   :mode ("\\.tex\\'" . LaTeX-mode)
   :init
   ;; TODO: why is `config' not working
-  (add-hook 'LaTeX-mode-hook
-	    ;; dependencies
-	    '(lambda ()
-	       (use-package my-LaTeX-environment)
-	       ;; config
-	       (setq
-		reftex-plug-into-AUCTeX t
-		TeX-auto-save t
-                TeX-PDF-mode t
-		TeX-parse-self t
-		TeX-source-correlate-mode t)
-	       ;; keybindings
-	       (define-key LaTeX-mode-map (kbd "M-q") 'noop)
-	       (define-key LaTeX-mode-map (kbd "C-c C-e") 'my-LaTeX-environment)
-	       (define-key LaTeX-mode-map (kbd "SPC") 'my-LaTeX-break-after-sentence-or-space)
-	       (push '(?% . ("$" . "$")) surround-pairs-alist)
-	       ;; switches
-	       (turn-on-reftex)
-	       (outline-minor-mode t)
-	       (visual-line-mode t)
-	       (set (make-local-variable 'visual-line-fringe-indicators) t))))
+  (progn
+    (use-package my-synctex)
+    (add-hook 'LaTeX-mode-hook
+	      ;; dependencies
+	      '(lambda ()
+		 (use-package my-LaTeX-environment)
+		 ;; config
+		 (setq
+		  reftex-plug-into-AUCTeX t
+		  TeX-auto-save t
+		  TeX-PDF-mode t
+		  TeX-parse-self t
+		  TeX-source-correlate-mode t)
+		 ;; keybindings
+		 (define-key LaTeX-mode-map (kbd "M-q") 'noop)
+		 (define-key LaTeX-mode-map (kbd "C-c C-e") 'my-LaTeX-environment)
+		 (define-key LaTeX-mode-map (kbd "SPC") 'my-LaTeX-break-after-sentence-or-space)
+		 (push '(?% . ("$" . "$")) surround-pairs-alist)
+		 ;; switches
+		 (turn-on-reftex)
+		 (outline-minor-mode t)
+		 (visual-line-mode t)
+		 (set (make-local-variable 'visual-line-fringe-indicators) t)))))
 
 (use-package org
   :ensure org

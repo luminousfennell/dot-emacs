@@ -9,6 +9,7 @@
     message-send-mail-function
     org-directory
     org-mobile-directory
+    reftex-default-bibliography
     user-full-name
     user-mail-address)
   )
