@@ -194,10 +194,9 @@
      org-export-latex-listings t
      org-file-apps '((auto-mode . emacs)
 		     ("\\.mm\\'" . default)
-		     ("\\.x?html?\\'" . default)
+		     ("\\.x?html?\\'" . system)
 		     (system . (dired-fm-spawn "xdg-open" (list file)))
-		     ("\\.pdf\\'" . default)
-		     (t . system))
+		     ("\\.pdf\\'" . system))
      org-format-latex-options '(:foreground default
 					    :background default
 					    :scale 1.3
