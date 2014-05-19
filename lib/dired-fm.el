@@ -73,14 +73,22 @@ file. With prefix arg, just do `dired-find-file'."
 				     (shell-quote-argument file-name)))
     ";")))
 
-(defun dired-fm-shoq-mime-type ()
+(defun dired-fm-show-mime-type ()
   (interactive)
   (message (dired-fm-query-mime-type (dired-get-file-for-visit))))
 
 ;; TODO: make an interactive command for this
-(defun dired-fm-set-default-application (file-name app)
-  (call-process-shell-command
-   (format (format dired-fm-set-default-application-command (shell-quote-argument app))
-	   (dired-fm-query-mime-type file-name))))
+(defun dired-fm-set-default-application ()
+  "Set default application for selected file, using `diref-fm-set-default-application-command'."
+  (interactive)
+  (let* ((file-name (dired-get-file-for-visit))
+	 (app (read-string (format "Default application for `%s': " (dired-fm-query-mime-type file-name)))))
+    ;; TODO: look for desktop files and provide them as completion
+    ;; TODO: validate existance of desktop file
+    (when app
+      (call-process-shell-command
+       (format (format dired-fm-set-default-application-command (shell-quote-argument app))
+	       (dired-fm-query-mime-type file-name))))))
+
 
 (provide 'dired-fm)
