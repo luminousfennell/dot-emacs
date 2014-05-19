@@ -362,6 +362,7 @@
 		gnus-agent nil
 		gnus-summary-line-format "%U%R%I %&user-date; %(%[%-23,23f%]%) %s\n"
 		gnus-gcc-mark-as-read t
+		gnus-message-archive-group '("Sent" "INBOX")
 		mail-user-agent 'gnus-user-agent
 		nnmail-crosspost nil)
 	  (use-package my-mbsync)
