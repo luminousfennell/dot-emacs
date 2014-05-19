@@ -1,6 +1,4 @@
-;; (load-file "~/.emacs.d/init-common.el")
-;; (load-file "~/.emacs.d/init-dired.el")
-(load-file "~/.emacs.d/init.el")
+(load-file (concat my-emacs-home "init.el"))
 
 ;; (require 'dired-dtach "~/.emacs.d/dired-dtach.el")
 (require 'dired-fm)

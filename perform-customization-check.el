@@ -1,7 +1,7 @@
 ;; list variables that should be customized and call
 ;; `check-customized' with them.
 
-(require 'check-customize "~/.emacs.d/check-customize.el")
+(require 'check-customize (concat my-emacs-home "check-customize.el"))
 
 (defvar check-customize-list
   '(bbdb-file-remote
@@ -9,6 +9,7 @@
     message-send-mail-function
     org-directory
     org-mobile-directory
+    reftex-default-bibliography
     user-full-name
     user-mail-address)
   )

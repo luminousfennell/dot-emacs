@@ -16,7 +16,10 @@
 (my-move-key evil-motion-state-map evil-normal-state-map (kbd "RET"))
 (my-move-key evil-motion-state-map evil-normal-state-map " ")
 (my-move-key evil-motion-state-map evil-normal-state-map (kbd "TAB"))
-(setq evil-emacs-state-modes nil)
+(setq evil-emacs-state-modes
+      '(gnus-group-mode
+	gnus-server-mode
+	gnus-summary-mode))
 (setq evil-motion-state-modes '(archive-mode
 				bbdb-mode
 				bookmark-bmenu-mode
@@ -62,9 +65,6 @@
 				gist-list-mode
 				gnus-article-mode
 				gnus-browse-mode
-				gnus-group-mode
-				gnus-server-mode
-				gnus-summary-mode
 				google-maps-static-mode
 				ibuffer-mode
 				jde-javadoc-checker-report-mode

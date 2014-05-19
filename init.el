@@ -1,9 +1,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Initialization and bootstrapping 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq my-emacs-home (file-name-directory user-init-file))
+(when (string= (getenv "HOME") (directory-file-name my-emacs-home))
+  (error "Initialization error: my-emacs-home is the same as HOME"))
 
 ;; personal extensions
-(add-to-list 'load-path "~/.emacs.d/lib")
+(add-to-list 'load-path (concat my-emacs-home "lib"))
+
+;; start a server if requested by EMACS_SERVER_FILE
+(let ((server-file (getenv "EMACS_SERVER_NAME")))
+  (when server-file
+    (setq server-name server-file)
+    (server-start)))
 
 ;; init package management
 (require 'package)
@@ -17,14 +26,15 @@
 (package-initialize)
 
 ;; initialize customization
-(setq custom-file "~/.emacs.d/init-custom.el")
+(setq custom-file (concat my-emacs-home "init-custom.el"))
 (load custom-file)
-(load-file "~/.emacs.d/perform-customization-check.el")
+(load-file (concat my-emacs-home "perform-customization-check.el"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Core editor settings 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq
+ auth-sources '("~/.authinfo.gpg")
  auto-revert-verbose nil
  auto-save-list-file-prefix "~/.cache/emacs.d/auto-save-list/.saves-"
  column-number-mode t
@@ -91,7 +101,7 @@
 	   evil-default-cursor '(t ignore)
 	   evil-want-fine-undo t
 	   )
-	  (load-file "~/.emacs.d/perform-evil-mode-bindings.el")))
+	  (load-file (concat my-emacs-home "perform-evil-mode-bindings.el"))))
 (use-package surround
   :ensure surround
   :init (global-surround-mode t))
@@ -120,33 +130,36 @@
   :mode ("\\.tex\\'" . LaTeX-mode)
   :init
   ;; TODO: why is `config' not working
-  (add-hook 'LaTeX-mode-hook
-	    ;; dependencies
-	    '(lambda ()
-	       (use-package my-LaTeX-environment)
-	       ;; config
-	       (setq
-		reftex-plug-into-AUCTeX t
-		TeX-auto-save t
-                TeX-PDF-mode t
-		TeX-parse-self t
-		TeX-source-correlate-mode t)
-	       ;; keybindings
-	       (define-key LaTeX-mode-map (kbd "M-q") 'noop)
-	       (define-key LaTeX-mode-map (kbd "C-c C-e") 'my-LaTeX-environment)
-	       (define-key LaTeX-mode-map (kbd "SPC") 'my-LaTeX-break-after-sentence-or-space)
-	       (push '(?% . ("$" . "$")) surround-pairs-alist)
-	       ;; switches
-	       (turn-on-reftex)
-	       (outline-minor-mode t)
-	       (visual-line-mode t)
-	       (set (make-local-variable 'visual-line-fringe-indicators) t))))
+  (progn
+    (use-package my-synctex)
+    (add-hook 'LaTeX-mode-hook
+	      ;; dependencies
+	      '(lambda ()
+		 (use-package my-LaTeX-environment)
+		 ;; config
+		 (setq
+		  reftex-plug-into-AUCTeX t
+		  TeX-auto-save t
+		  TeX-PDF-mode t
+		  TeX-parse-self t
+		  TeX-source-correlate-mode t)
+		 ;; keybindings
+		 (define-key LaTeX-mode-map (kbd "M-q") 'noop)
+		 (define-key LaTeX-mode-map (kbd "C-c C-e") 'my-LaTeX-environment)
+		 (define-key LaTeX-mode-map (kbd "SPC") 'my-LaTeX-break-after-sentence-or-space)
+		 (push '(?% . ("$" . "$")) surround-pairs-alist)
+		 ;; switches
+		 (turn-on-reftex)
+		 (outline-minor-mode t)
+		 (visual-line-mode t)
+		 (set (make-local-variable 'visual-line-fringe-indicators) t)))))
 
 (use-package org
   :ensure org
   :mode ("\\.org\\'" . org-mode)
   :init
   (progn
+    (use-package dired-fm)
     (setq
      org-highest-priority ?A
      org-default-priority ?M
@@ -181,9 +194,9 @@
      org-export-latex-listings t
      org-file-apps '((auto-mode . emacs)
 		     ("\\.mm\\'" . default)
-		     ("\\.x?html?\\'" . default)
-		     (system . "gvfs-open %s")
-		     ("pdf" . "zathura %s"))
+		     ("\\.x?html?\\'" . system)
+		     (system . (dired-fm-spawn "xdg-open" (list file)))
+		     ("\\.pdf\\'" . system))
      org-format-latex-options '(:foreground default
 					    :background default
 					    :scale 1.3
@@ -270,7 +283,6 @@
     (add-hook 'coq-mode-hook
   	      (lambda ()
   		(setq
-                 coq-compile-before-require t
                  coq-one-command-per-line nil
                  coq-script-indent nil
                  proof-find-theorems-command "SearchAbout %s"
@@ -280,7 +292,8 @@
                  proof-imenu-enable nil
                  proof-script-fly-past-comments t
                  proof-strict-read-only t
-                 proof-three-window-enable t)))))
+                 proof-three-window-enable nil
+		 proof-auto-raise-buffers nil)))))
 
 (use-package agda2
   :init
@@ -317,8 +330,9 @@
 
 (use-package bbdb
   :ensure bbdb
-  :init (setq bbdb-complete-mail-allow-cycling t)
-  )
+  :init (progn
+	  (setq bbdb-complete-mail-allow-cycling t)
+	  (bbdb-initialize 'gnus 'message)))
 
 (use-package fsharp-mode
   :ensure fsharp-mode
@@ -333,19 +347,57 @@
 
 (use-package markdown-mode
   :ensure markdown-mode
-  :mode ("\\.md\\'" . markdown-mode))
+  :mode ("\\.md\\'" . markdown-mode)
+  :init (add-hook 'markdown-mode-hook (lambda ()
+					(require 'org)
+					(orgtbl-mode t))))
 
 ;; mail
 ;; TODO: maybe only load this when starting gnus-standalone?
 (use-package gnus
-  :init (setq gnus-propagate-marks t
-	      gnus-save-newsrc-file nil
-	      gnus-use-dribble-file nil
-	      mail-user-agent 'gnus-user-agent))
-
+  :init (progn
+	  (setq gnus-propagate-marks t
+		gnus-save-newsrc-file nil
+		gnus-use-dribble-file nil
+		gnus-agent nil
+		gnus-summary-line-format "%U%R%I %&user-date; %(%[%-23,23f%]%) %s\n"
+		gnus-gcc-mark-as-read t
+		mail-user-agent 'gnus-user-agent
+		nnmail-crosspost nil)
+	  (use-package my-mbsync)
+	  (define-key gnus-group-mode-map
+	    (kbd "C-c g")
+	    'my-mbsync-group)
+	  (define-key gnus-summary-mode-map
+	    (kbd "C-c g")
+	    'my-mbsync-summary)
+	  ;; sync on startup
+	  (add-hook 'gnus-startup-hook 'my-mbsync-group)
+	  ;; sync mark updates
+	  (let ((mail-update-hooks
+		 '(
+		   gnus-exit-group-hook
+		   gnus-summary-article-delete-hook
+		   ;; TODO: determine if it is usefull to update after expirery after all
+		   ;; gnus-summary-article-expire-hook
+		   gnus-summary-article-move-hook
+		   message-sent-hook
+		   )))
+	    (dolist (hook mail-update-hooks)
+	      (add-hook hook 'my-mbsync-update)))))
 (use-package message
-  :init (setq message-citation-line-format "On %a, %b %d %Y at %R %z, %N wrote:\n"
-	      message-citation-line-function 'message-insert-formatted-citation-line
-	      message-confirm-send t
-	      message-sendmail-f-is-evil t
-	      mm-text-html-renderer (quote w3m)))
+  :init (progn
+	  (setq message-citation-line-format "On %a, %b %d %Y at %R %z, %N wrote:\n"
+		message-citation-line-function 'message-insert-formatted-citation-line
+		message-confirm-send t
+		message-sendmail-f-is-evil t
+		mm-text-html-renderer (quote w3m)
+		mm-text-html-renderer 'w3m
+		)
+	  (add-hook 'mail-mode-hook 'mail-abbrevs-mode)
+	  (use-package nnir)
+	  (use-package w3m
+	    :ensure w3m
+	    :init (define-key
+		    w3m-minor-mode-map (kbd "<RET>")
+		    'w3m-view-url-with-external-browser))))
