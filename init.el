@@ -401,3 +401,10 @@
 	    :init (define-key
 		    w3m-minor-mode-map (kbd "<RET>")
 		    'w3m-view-url-with-external-browser))))
+
+
+;;; Load program specific init files
+(let ((program (getenv "EMACS_PROGRAM")))
+  (when program
+    (message "Loading program: %s" program)
+    (load-file (concat my-emacs-home (format "init-%s.el" program)))))

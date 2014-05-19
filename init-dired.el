@@ -1,47 +1,48 @@
-(require 'dired-details+)
+(require 'dired-fm)
 
-(setq
- dired-bind-jump nil
- dired-details-hidden-string ""
- ;; magic copy/rename targets (really cool)
- dired-dwim-target t
- ;; directories should be listed first
- dired-listing-switches "-lah --group-directories-first"
- dired-omit-files "^\\.?#\\|^\\.$\\|^\\.[^\\.].*$"
- dired-omit-verbose nil
- dired-recursive-copies 'always
- dired-recursive-deletes 'always)
-
-;; hook
-(add-hook 'dired-mode-hook
-	  (lambda ()
-	    (auto-revert-mode t)
-	    ;; keybindings
-	    (evil-define-key 'normal dired-mode-map ")"
-	      'dired-details-toggle)
-	    ;; Override dired-async's broken delete (it segfaults)
-	    ;; TODO: does not work reliably with remote->local copies
-	    ;; (require 'dired-async)
-	    ;; (evil-define-key
-	    ;;   'normal
-	    ;;   dired-mode-map "D" 'my-dired-async-delete)
-	    ))
-
-(defun my-dired-async-delete ()
-  (interactive)
-  (when (y-or-n-p (format "Really delete these %d files? "
-			  (length (dired-get-marked-files))))
-    (dired-map-over-marks
-     (progn
-       (let ((f (dired-get-filename)))
-	 (dired-delete-file f dired-recursive-deletes))) nil)))
-
-
-
-;;dired-x for hidden view
-(add-hook 'dired-load-hook (lambda ()
-                             (load "dired-x")))
+;; some special keymaps for dired standalone
 (add-hook 'dired-mode-hook (lambda ()
-                             (load "dired-x" nil t)
-                             (dired-omit-mode 1)
-                             (auto-revert-mode t)))
+                             (evil-define-key 'normal dired-mode-map "\C-m" 'dired-fm-open)
+                             (define-key dired-mode-map (kbd "C-c t")  'dired-fm-open-terminal)
+			     ;; TODO fix ido-gvfs... use dtach
+                             ;; (define-key dired-mode-map (kbd "C-x C-f") 'ido-find-file-gvfs)
+                             (define-key 
+                               dired-mode-map 
+                               (kbd "C-u +") 
+                               'my-dired-new-file))
+	  t)
+
+
+;; new empty file ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+;; TODO replace this with find-file handler (like gvfs-ido before)
+(defun my-dired-new-file (fname)
+  (interactive "FTouch new file: ")
+  (if (file-exists-p fname)
+      (error "File `%s' already exists!" fname)
+    (let* ((errfile (make-temp-file "dired-touch-error"))
+           (exit-code (call-process "touch" 
+                                    nil 
+                                    `(nil ,errfile) 
+                                    nil 
+                                    (expand-file-name fname))))
+      (when (not (= 0 exit-code))
+        (with-temp-buffer
+          (insert-file-contents errfile)
+          (error "Error executing `touch': %s" (buffer-string))))))
+  (revert-buffer)
+  (let ((line 0)        
+        (last-line (save-excursion (end-of-buffer) (line-number-at-pos))))
+    (save-excursion
+      (beginning-of-buffer)
+      (while (and (not (string= fname (dired-file-name-at-point)))
+                  (not (= (line-number-at-pos) last-line)))
+        (dired-next-line 1)
+        (setq line (+ 1 line)))
+      (if (dired-file-name-at-point)
+          (progn (message "%d" line) line)
+        (error "Unable to find created file `%s'" real-fname)))
+    ;; now `line' is the number of next operations needed
+    (beginning-of-buffer)
+    ; this is necessary, as `(dired-next-line 1)' somehow behaves
+    ; differently than `(dired-next-line x)' where x > 1
+    (dotimes (tmp line) (dired-next-line 1))))
